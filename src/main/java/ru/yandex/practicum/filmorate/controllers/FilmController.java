@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Slf4j
 @RequestMapping("/films")
 public class FilmController {
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
     private final Map<Integer, Film> films = new HashMap<>();
     private Integer generatorId = 0;
 
@@ -26,9 +25,6 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-       if(films.containsKey(film.getId())) {
-            throw new ValidationException("Такой фильм уже существует!");
-        }
         validateFilm(film);
         film.setId(++generatorId);
         films.put(film.getId(), film);

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Slf4j
 @RequestMapping("/users")
 public class UserController {
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
     private final Map<Integer, User> users = new HashMap<>();
     private Integer generatorId = 0;
 
@@ -26,9 +25,6 @@ public class UserController {
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        if (users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с таким id уже существует!");
-        }
         validateUser(user);
         user.setId(++generatorId);
         users.put(user.getId(), user);
@@ -57,10 +53,10 @@ public class UserController {
         if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
             throw new ValidationException("Логин не может быть пустым и содержать пробелы!");
         }
-        if (user.getName() == null) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
+        if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения не может быть в будущем!");
         }
     }
