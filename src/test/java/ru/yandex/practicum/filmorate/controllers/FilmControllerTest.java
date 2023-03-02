@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -15,7 +18,7 @@ public class FilmControllerTest {
     void shouldCreateFilm() {
         Film film = new Film("Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         filmController.createFilm(film);
         final Collection<Film> films = filmController.findAll();
         assertNotNull(films, "Список фильмов пуст.");
@@ -26,7 +29,7 @@ public class FilmControllerTest {
     void shouldNotCreateFilmWithEmptyName() {
         Film film = new Film(null, "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Collection<Film> films = filmController.findAll();
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, films.size());
@@ -38,7 +41,7 @@ public class FilmControllerTest {
                 "Paris, gathering at Kate and Peter's home in a Chicago suburb on the night before their departure. " +
                 "Kate and Peter's youngest son, Kevin, is the subject of ridicule by his older siblings and cousins. ",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Collection<Film> films = filmController.findAll();
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, films.size());
@@ -48,7 +51,7 @@ public class FilmControllerTest {
     void shouldNotCreateFilmWithBadReleaseDate() {
         Film film = new Film("Home alone","Christmas film",
                 LocalDate.of(1890, 11, 10), 90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Collection<Film> films = filmController.findAll();
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, films.size());
@@ -58,7 +61,7 @@ public class FilmControllerTest {
     void shouldNotCreateFilmWithBadDuration() {
         Film film = new Film("Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10), -90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Collection<Film> films = filmController.findAll();
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, films.size());
@@ -70,7 +73,7 @@ public class FilmControllerTest {
     void shouldUpdateFilm() {
         Film film = new Film("Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         filmController.createFilm(film);
         Film updatedFilm = new Film(1, "UPD Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
@@ -84,7 +87,7 @@ public class FilmControllerTest {
     void shouldNotUpdateFilmWithEmptyName() {
         Film film = new Film("Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         filmController.createFilm(film);
 
         assertThrows(ValidationException.class, () -> filmController.updateFilm(new Film(1,null,
@@ -95,7 +98,7 @@ public class FilmControllerTest {
     void shouldNotUpdateFilmWithLongDescription() {
         Film film = new Film("Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         filmController.createFilm(film);
 
         assertThrows(ValidationException.class, () -> filmController.updateFilm( new Film(1,"Home alone",
@@ -109,7 +112,7 @@ public class FilmControllerTest {
     void shouldNotUpdateFilmWithBadReleaseDate() {
         Film film = new Film("Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         filmController.createFilm(film);
 
         assertThrows(ValidationException.class, () -> filmController.updateFilm( new Film(1, "Home alone",
@@ -120,7 +123,7 @@ public class FilmControllerTest {
     void shouldNotUpdateFilmWithBadDuration() {
         Film film = new Film("Home alone", "Christmas film",
                 LocalDate.of(1990, 11, 10),90);
-        FilmController filmController = new FilmController();
+        FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         filmController.createFilm(film);
 
         assertThrows(ValidationException.class, () -> filmController.updateFilm(new Film(1, "Home alone",
