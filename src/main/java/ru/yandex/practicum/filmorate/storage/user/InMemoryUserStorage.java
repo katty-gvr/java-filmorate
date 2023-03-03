@@ -41,11 +41,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User findUserById(Integer userId) {
-        Collection<User> users = findAll();
-        return users.stream()
-                .filter(p -> p.getId().equals(userId))
-                .findFirst()
-                .orElseThrow(() -> new UserNotFoundException(String.format("Пользователь с id %d не найден", userId)));
+        if(users.get(userId) != null) {
+            return users.get(userId);
+        } else {
+            throw new UserNotFoundException(String.format("Пользователь с id %d не найден", userId));
+        }
     }
 
     private void validateUser(User user) {
@@ -55,7 +55,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (!user.getEmail().contains("@")) {
             throw new ValidationException("Адрес электронной почты должен содержать символ @");
         }
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
+        if (user.getLogin() == null || user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
             throw new ValidationException("Логин не может быть пустым и содержать пробелы!");
         }
         if (user.getName() == null || user.getName().isBlank()) {
