@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.*;
 @RestControllerAdvice
 public class ErrorHandler {
 
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
@@ -47,15 +46,5 @@ public class ErrorHandler {
         return new ErrorResponse("Жанр не найден: " + e.getMessage());
     }
 
-
-
 }
-class ErrorResponse {
-    private final String error;
-    public ErrorResponse(String error) {
-        this.error = error;
-    }
-    public String getError() {
-        return error;
-    }
-}
+
