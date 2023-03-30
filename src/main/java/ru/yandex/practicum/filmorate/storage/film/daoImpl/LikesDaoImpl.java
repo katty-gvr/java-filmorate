@@ -34,7 +34,7 @@ public class LikesDaoImpl implements LikesDao {
 
     @Override
     public void deleteLikeFromFilm(Integer filmId, Integer userId) {
-        if(checkFilmId(filmId) == 0) {
+        if (checkFilmId(filmId) == 0) {
             throw new FilmNotFoundException("Film id " + filmId + " not found");
         }
         String sqlQuery = "DELETE FROM films_likes WHERE user_id = ? AND film_id = ?";

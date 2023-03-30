@@ -47,7 +47,7 @@ public class UserDbStorage implements UserStorage {
         }, keyHolder);
         user.setId(keyHolder.getKey().intValue());
         checkUserName(user);
-        if(user.getLogin().equals(user.getName())) {
+        if (user.getLogin().equals(user.getName())) {
             String sqlQuery1 = "UPDATE users SET user_name = ?" +
                     "WHERE user_id = ?";;
             jdbcTemplate.update(sqlQuery1, user.getName(), user.getId());

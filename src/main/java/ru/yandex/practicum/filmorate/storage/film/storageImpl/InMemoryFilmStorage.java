@@ -43,7 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film findFilmById(Integer filmId) {
-        if(films.get(filmId) != null) {
+        if (films.get(filmId) != null) {
             return films.get(filmId);
         } else {
             throw new FilmNotFoundException(String.format("Фильм с id %d не найден", filmId));
@@ -61,16 +61,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     private void validateFilm(Film film) {
-        if(film.getName() == null || film.getName().isBlank()) {
+        if (film.getName() == null || film.getName().isBlank()) {
             throw new ValidationException("Название фильма не может быть пустым!");
         }
-        if(film.getDescription().length() > 200) {
+        if (film.getDescription().length() > 200) {
             throw new ValidationException("Описание фильма не должно превышать 200 символов!");
         }
-        if(film.getReleaseDate().isBefore(LATEST_RELEASE_DATE)) {
+        if (film.getReleaseDate().isBefore(LATEST_RELEASE_DATE)) {
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
         }
-        if(film.getDuration() <= 0) {
+        if (film.getDuration() <= 0) {
             throw new ValidationException("Продолжительность фильма должна быть положительной!");
         }
     }

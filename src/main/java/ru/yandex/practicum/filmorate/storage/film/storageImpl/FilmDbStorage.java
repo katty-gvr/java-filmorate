@@ -46,7 +46,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film createFilm(Film film) {
         String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
                 + "values (?, ?, ?, ?, ?)";
-        if(film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
         }
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -61,7 +61,7 @@ public class FilmDbStorage implements FilmStorage {
         }, keyHolder);
         film.setId(keyHolder.getKey().intValue());
 
-        if(film.getGenres() != null) {
+        if (film.getGenres() != null) {
             genreDao.addGenresToFilm(film);
         }
         return film;
@@ -69,7 +69,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if(checkFilmId(film.getId()) == 0) {
+        if (checkFilmId(film.getId()) == 0) {
             throw new FilmNotFoundException("Фильм с идентификатором " + film.getId() + " не найден!");
         }
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
