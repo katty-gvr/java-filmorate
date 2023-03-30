@@ -1,23 +1,39 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
+
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.daoImpl.FriendListDaoImpl;
+import ru.yandex.practicum.filmorate.storage.user.storageImpl.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.storageImpl.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class UserControllerTest {
+
     @Test
     void shouldCreateUser() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
         final Collection<User> users = userController.findAll();
         assertNotNull(users, "Список пользователей пуст.");
@@ -26,9 +42,10 @@ public class UserControllerTest {
 
     @Test
     void shouldNotCreateUserWithEmptyEmail() {
-        User user = new User(null,"Ivan2343", "Ivan",
+        User user = new User(null, "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         final Collection<User> users = userController.findAll();
         assertThrows(ValidationException.class, () -> userController.createUser(user));
         assertEquals(0, users.size());
@@ -38,7 +55,8 @@ public class UserControllerTest {
     void shouldNotCreateUserWithBadEmail() {
         User user = new User("ivan--mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         final Collection<User> users = userController.findAll();
         assertThrows(ValidationException.class, () -> userController.createUser(user));
         assertEquals(0, users.size());
@@ -48,7 +66,8 @@ public class UserControllerTest {
     void shouldNotCreateUserWithEmptyLogin() {
         User user = new User("ivan@mail.ru", " ", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         final Collection<User> users = userController.findAll();
         assertThrows(ValidationException.class, () -> userController.createUser(user));
         assertEquals(0, users.size());
@@ -58,7 +77,8 @@ public class UserControllerTest {
     void shouldNotCreateUserWithBadLogin() {
         User user = new User("ivan@mail.ru", "Ivan 2 3 4 3", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         final Collection<User> users = userController.findAll();
         assertThrows(ValidationException.class, () -> userController.createUser(user));
         assertEquals(0, users.size());
@@ -68,7 +88,8 @@ public class UserControllerTest {
     void shouldCreateUserWithEmptyName() {
         User user = new User("ivan@mail.ru", "Ivan2343", null,
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
         final Collection<User> users = userController.findAll();
         assertNotNull(users, "Список пользователей пуст.");
@@ -80,7 +101,8 @@ public class UserControllerTest {
     void shouldNotCreateUserWithBadBirthday() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(2025, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         final Collection<User> users = userController.findAll();
         assertThrows(ValidationException.class, () -> userController.createUser(user));
         assertEquals(0, users.size());
@@ -91,7 +113,8 @@ public class UserControllerTest {
     void shouldUpdateUser() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
         User updatedUser = new User(1, "ivan@mail.ru", "UpdatedIvan2343", "UPDIvan",
                 LocalDate.of(1995, 5, 5));
@@ -103,7 +126,8 @@ public class UserControllerTest {
     void shouldNotUpdateUserWithEmptyEmail() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
 
         assertThrows(ValidationException.class, () -> userController.updateUser(new User(1, null,
@@ -114,10 +138,11 @@ public class UserControllerTest {
     void shouldNotUpdateUserWithBadEmail() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
 
-        assertThrows(ValidationException.class, () -> userController.updateUser(new User(1,"ivan--mail.ru",
+        assertThrows(ValidationException.class, () -> userController.updateUser(new User(1, "ivan--mail.ru",
                 "Ivan2343", "Ivan", LocalDate.of(1995, 5, 5))));
     }
 
@@ -125,10 +150,11 @@ public class UserControllerTest {
     void shouldNotUpdateUserWithEmptyLogin() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
 
-        assertThrows(ValidationException.class, () -> userController.updateUser(new User(1,"ivan@mail.ru",
+        assertThrows(ValidationException.class, () -> userController.updateUser(new User(1, "ivan@mail.ru",
                 " ", "Ivan", LocalDate.of(1995, 5, 5))));
 
     }
@@ -137,7 +163,8 @@ public class UserControllerTest {
     void shouldNotUpdateUserWithBadLogin() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
 
         assertThrows(ValidationException.class, () -> userController.updateUser(new User(1, "ivan@mail.ru",
@@ -148,9 +175,10 @@ public class UserControllerTest {
     void shouldUpdateUserWithEmptyName() {
         User user = new User("ivan@mail.ru", "Ivan2343", null,
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
-        User updatedUser = new User(1,"ivan@mail.ru", "UPDIvan2343", null,
+        User updatedUser = new User(1, "ivan@mail.ru", "UPDIvan2343", null,
                 LocalDate.of(1995, 5, 5));
         userController.updateUser(updatedUser);
         final Collection<User> users = userController.findAll();
@@ -164,7 +192,8 @@ public class UserControllerTest {
     void shouldNotUpdateUserWithBadBirthday() {
         User user = new User("ivan@mail.ru", "Ivan2343", null,
                 LocalDate.of(1995, 5, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
 
         assertThrows(ValidationException.class, () -> userController.updateUser(new User(1, "ivan@mail.ru",
@@ -178,7 +207,8 @@ public class UserControllerTest {
                 LocalDate.of(1995, 5, 5));
         User user2 = new User("kate@mail.ru", "Kate2343", "Kate",
                 LocalDate.of(1995, 6, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
+                new FriendListDaoImpl(new JdbcTemplate())));
         userController.createUser(user);
         userController.createUser(user2);
         userController.addFriend(user.getId(), user2.getId());
@@ -187,3 +217,4 @@ public class UserControllerTest {
         assertEquals(1, user2.getFriendIds().size());
     }
 }
+

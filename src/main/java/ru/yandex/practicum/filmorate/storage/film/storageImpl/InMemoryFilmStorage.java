@@ -1,16 +1,18 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.film.storageImpl;
 
-import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
@@ -47,6 +49,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else {
             throw new FilmNotFoundException(String.format("Фильм с id %d не найден", filmId));
         }
+    }
+
+    @Override
+    public Collection<Film> findPopularFilms(Integer count) {
+        Collection<Film> films = findAll();
+        return films.stream()
+                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
+                .limit(count)
+                .collect(Collectors.toList());
+
     }
 
     private void validateFilm(Film film) {

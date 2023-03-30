@@ -47,11 +47,14 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}") //  пользователь ставит лайк фильму.
     public void addLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Integer userId) {
         filmService.addLike(filmId, userId);
+        log.debug("Пользователь c id " + userId + "поставил лайк фильму с id " + filmId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Integer userId) {
         filmService.deleteLike(filmId, userId);
+        log.debug("Пользователь c id " + userId + "удалил лайк с фильма " + filmId);
+
     }
 
     @GetMapping("/popular")

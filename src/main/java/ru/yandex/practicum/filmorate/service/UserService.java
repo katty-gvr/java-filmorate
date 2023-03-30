@@ -4,15 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.FriendListDao;
 
 import java.util.*;
 
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendListDao friendListDao;
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FriendListDao friendListDao) {
         this.userStorage = userStorage;
+        this.friendListDao = friendListDao;
     }
 
     public Collection<User> getAllUsers() {
@@ -32,42 +35,18 @@ public class UserService {
     }
 
     public void addFriend(Integer id, Integer friendId) {
-        User user = findUserById(id);
-        User friend = findUserById(friendId);
-
-        user.getFriendIds().add(friendId);
-        friend.getFriendIds().add(id);
+        friendListDao.addFriend(id, friendId);
     }
 
     public void deleteFriend(Integer id, Integer friendId) {
-        User user = findUserById(id);
-        User friend = findUserById(friendId);
-
-        user.getFriendIds().remove(friend.getId());
-        friend.getFriendIds().remove(user.getId());
+        friendListDao.deleteFriend(id, friendId);
     }
 
     public Collection<User> getFriendList(Integer id) {
-        List<User> friends = new ArrayList<>();
-        Set<Integer> friendIds = findUserById(id).getFriendIds();
-
-        for(Integer friendId : friendIds) {
-            User friend = findUserById(friendId);
-            friends.add(friend);
-        }
-        return friends;
+        return friendListDao.getAll(id);
     }
 
     public Collection<User> getCommonFriends(Integer id, Integer otherId) {
-        List<User> commonFriends = new ArrayList<>();
-        Set<Integer> userFriends = findUserById(id).getFriendIds();
-        Set<Integer> otherUserFriends = findUserById(otherId).getFriendIds();
-
-        Set<Integer> commonIds = new HashSet<>(userFriends);
-        commonIds.retainAll(otherUserFriends);
-        for(Integer comId : commonIds) {
-            commonFriends.add(findUserById(comId));
-        }
-        return commonFriends;
+        return friendListDao.getCommonFriends(id, otherId);
     }
 }
