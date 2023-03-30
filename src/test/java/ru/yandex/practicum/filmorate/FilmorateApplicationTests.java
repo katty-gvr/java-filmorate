@@ -45,6 +45,7 @@ class FilmorateApplicationTests {
         assertThat(users)
                 .isNotEmpty();
     }
+
     @Test
     public void testCreateUser() {
         User user = new User("test@test.com", "test", "Test User", LocalDate.of(1990, 10, 10));
@@ -53,6 +54,7 @@ class FilmorateApplicationTests {
         assertThat(user.getId()).isNotNull();
         assertThat(userStorage.findUserById(user.getId())).isEqualTo(user);
     }
+
     @Test
     public void testUpdateUser() {
         User user = new User("test@test.com", "test", "Test User", LocalDate.of(1990, 10, 10));
@@ -135,7 +137,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void testGetCommonFriends() {
-        User friend1 = new User( "friend1@test.com", "friend1", "Friend1", LocalDate.of(2000, 1, 1));
+        User friend1 = new User("friend1@test.com", "friend1", "Friend1", LocalDate.of(2000, 1, 1));
         User friend2 = new User("friend2@test.com", "friend2", "Friend2", LocalDate.of(2000, 7, 1));
         User friend3 = new User("friend3@test.com", "friend 3", "Friend3",LocalDate.of(2000, 7, 1));
 
@@ -276,7 +278,6 @@ class FilmorateApplicationTests {
         assertEquals("G", mpa.getName());
         assertEquals("Нет возрастных ограничений", mpa.getDescription());
     }
-
 }
 
 
