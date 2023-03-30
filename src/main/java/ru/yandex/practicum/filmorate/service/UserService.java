@@ -12,6 +12,7 @@ import java.util.*;
 public class UserService {
     private final UserStorage userStorage;
     private final FriendListDao friendListDao;
+
     @Autowired
     public UserService(UserStorage userStorage, FriendListDao friendListDao) {
         this.userStorage = userStorage;
