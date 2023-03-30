@@ -71,7 +71,7 @@ class FilmorateApplicationTests {
     public void testFindUserByIdThrowsUserNotFoundException() {
         assertThatThrownBy(() -> userStorage.findUserById(999))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User with ID 999 not found");
+                .hasMessage("Пользователь с идентификатором 999 не найден");
     }
 
     @Test
@@ -92,7 +92,7 @@ class FilmorateApplicationTests {
         int friendId = 1;
         assertThatThrownBy(() -> friendListDao.addFriend(userId, friendId))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("User and Friend id is same");
+                .hasMessage("Id пользователей не должны совпадать!");
     }
 
     @Test
@@ -101,7 +101,7 @@ class FilmorateApplicationTests {
         int friendId = 999;
         assertThatThrownBy(() -> friendListDao.addFriend(userId, friendId))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User or Friend id not exist");
+                .hasMessage("Пользователь не найден");
     }
 
     @Test
@@ -124,7 +124,7 @@ class FilmorateApplicationTests {
         int friendId = 999;
         assertThatThrownBy(() -> friendListDao.deleteFriend(userId, friendId))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("User or Friend id wrong");
+                .hasMessage("Введен некорректный id");
     }
 
     @Test
@@ -156,7 +156,7 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    public void testFindAll() {
+    public void testFindAllFilms() {
         testCreateFilm();
         Collection<Film> films = filmStorage.findAll();
         assertThat(films).isNotEmpty();

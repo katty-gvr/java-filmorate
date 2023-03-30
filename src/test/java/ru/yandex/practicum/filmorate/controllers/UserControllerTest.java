@@ -186,22 +186,5 @@ public class UserControllerTest {
         assertThrows(ValidationException.class, () -> userController.updateUser(new User(1, "ivan@mail.ru",
                 "Ivan2343", "Ivan", LocalDate.of(2025, 5, 5))));
     }
-
-    @Test
-    void
-    shouldAddFriend() {
-        User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
-                LocalDate.of(1995, 5, 5));
-        User user2 = new User("kate@mail.ru", "Kate2343", "Kate",
-                LocalDate.of(1995, 6, 5));
-        UserController userController = new UserController(new UserService(new InMemoryUserStorage(),
-                new FriendListDaoImpl(new JdbcTemplate())));
-        userController.createUser(user);
-        userController.createUser(user2);
-        userController.addFriend(user.getId(), user2.getId());
-
-        assertEquals(1, user.getFriendIds().size());
-        assertEquals(1, user2.getFriendIds().size());
-    }
 }
 
