@@ -33,7 +33,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if(!films.containsKey(film.getId())) {
+        if (!films.containsKey(film.getId())) {
             throw new FilmNotFoundException("Такого фильма не существует!");
         }
         validateFilm(film);

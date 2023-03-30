@@ -76,7 +76,7 @@ public class FilmDbStorage implements FilmStorage {
                 "duration = ?, mpa_id = ? WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
                 film.getMpa().getId(), film.getId());
-        if(film.getGenres() == null || film.getGenres().isEmpty()) {
+        if (film.getGenres() == null || film.getGenres().isEmpty()) {
             genreDao.deleteGenresFromFilm(film);
         } else {
             genreDao.updateGenresOfFilm(film);

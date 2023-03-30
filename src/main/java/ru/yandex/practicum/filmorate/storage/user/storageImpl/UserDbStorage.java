@@ -28,11 +28,6 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(sqlQuery, this::rowMapper);
     }
 
-    public void deleteAllData() {
-        String sqlQuery = "DELETE FROM users";
-        jdbcTemplate.update(sqlQuery);
-    }
-
     @Override
     public User createUser(User user) {
         String sqlQuery = "INSERT INTO users (user_name, user_email, user_login, user_birthday) VALUES (?, ?, ?, ?)";
