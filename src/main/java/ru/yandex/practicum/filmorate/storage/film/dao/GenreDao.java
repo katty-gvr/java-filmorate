@@ -12,9 +12,11 @@ public interface GenreDao {
     Collection<Genre> getAllGenres();
 
     Genre getGenreById(Integer genreId);
+
     void addGenresToFilm(Film film);
 
     void deleteGenresFromFilm(Film film);
+
     void updateGenresOfFilm(Film film);
 
     LinkedHashSet<Genre> getGenresOfFilm(int filmId);

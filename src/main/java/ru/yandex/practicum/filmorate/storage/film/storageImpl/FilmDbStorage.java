@@ -99,8 +99,8 @@ public class FilmDbStorage implements FilmStorage {
        Film film = jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
        genreDao.updateGenresOfFilm(film);
        return film;
-
     }
+
     @Override
     public Collection<Film> findPopularFilms(Integer count) {
         String sqlQuery = "SELECT f.*, " +

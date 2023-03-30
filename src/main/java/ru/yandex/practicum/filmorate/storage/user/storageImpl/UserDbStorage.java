@@ -85,6 +85,7 @@ public class UserDbStorage implements UserStorage {
                 resultSet.getDate("user_birthday").toLocalDate()
         );
     }
+
     private int checkUserId(int id) {
         String sqlQuery = "SELECT COUNT(*) FROM users WHERE user_id = ?";
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class, id);

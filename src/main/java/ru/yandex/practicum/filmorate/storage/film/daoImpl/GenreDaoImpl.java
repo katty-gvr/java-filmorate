@@ -44,6 +44,7 @@ public class GenreDaoImpl implements GenreDao {
         String sqlQuery = "DELETE FROM films_genres WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
     }
+
     @Override
     public void addGenresToFilm(Film film) {
         for (Genre genre : film.getGenres()) {
@@ -51,6 +52,7 @@ public class GenreDaoImpl implements GenreDao {
             jdbcTemplate.update(setNewGenres, film.getId(), genre.getId());
         }
     }
+
     @Override
     public void updateGenresOfFilm(Film film) {
         String sqlQuery = "DELETE FROM films_genres WHERE film_id = ?";
