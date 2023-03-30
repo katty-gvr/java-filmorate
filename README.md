@@ -1,3 +1,3 @@
 # java-filmorate
 Template repository for Filmorate project.
-![Database Diagram](https://github.com/Ekaterina-Gavrilova16/java-filmorate/blob/main/database_diagram.png)
+![Database Diagram](https://github.com/katty-gvr/java-filmorate/blob/main/QuickDBD-Free%20Diagram%20(2).png)
