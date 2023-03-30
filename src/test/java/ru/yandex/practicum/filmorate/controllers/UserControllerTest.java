@@ -1,30 +1,18 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.daoImpl.FriendListDaoImpl;
 import ru.yandex.practicum.filmorate.storage.user.storageImpl.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.storageImpl.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-
 
 public class UserControllerTest {
 
@@ -108,7 +96,6 @@ public class UserControllerTest {
         assertEquals(0, users.size());
     }
 
-    //updatingUsers
     @Test
     void shouldUpdateUser() {
         User user = new User("ivan@mail.ru", "Ivan2343", "Ivan",
