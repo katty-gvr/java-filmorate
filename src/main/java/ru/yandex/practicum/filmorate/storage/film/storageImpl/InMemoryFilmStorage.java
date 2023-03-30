@@ -16,7 +16,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
     private Integer generatorId = 0;
-    final LocalDate LATEST_RELEASE_DATE = LocalDate.of(1895, 12,28);
+    final LocalDate latestReleaseDate = LocalDate.of(1895, 12,28);
 
     @Override
     public Collection<Film> findAll() {
@@ -67,7 +67,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getDescription().length() > 200) {
             throw new ValidationException("Описание фильма не должно превышать 200 символов!");
         }
-        if (film.getReleaseDate().isBefore(LATEST_RELEASE_DATE)) {
+        if (film.getReleaseDate().isBefore(latestReleaseDate)) {
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
         }
         if (film.getDuration() <= 0) {
