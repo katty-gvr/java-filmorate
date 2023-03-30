@@ -179,7 +179,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void testUpdateFilm() {
-        Film film = new Film(1, "Updated Film", "Updated Description", LocalDate.of(2000, 1 ,1),
+        Film film = new Film(1, "Updated Film", "Updated Description", LocalDate.of(2000, 1,1),
                 130, new Mpa(2, "PG-13", "Детям до 13 лет просмотр не желателен"),
                 new HashSet<>(), new LinkedHashSet<>());
         Film updatedFilm = filmStorage.updateFilm(film);
@@ -199,7 +199,7 @@ class FilmorateApplicationTests {
         assertThat(film.getId()).isEqualTo(1);
         assertThat(film.getName()).isEqualTo("Updated Film");
         assertThat(film.getDescription()).isEqualTo("Updated Description");
-        assertThat(film.getReleaseDate()).isEqualTo(LocalDate.of(2000, 1 ,1));
+        assertThat(film.getReleaseDate()).isEqualTo(LocalDate.of(2000, 1,1));
         assertThat(film.getDuration()).isEqualTo(130);
         assertThat(film.getGenres()).isEmpty();
     }
@@ -252,7 +252,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void testAddAndGetGenresToFilm() {
-        Film film = new Film(55, "Updated Film", "Updated Description", LocalDate.of(2000, 1 ,1),
+        Film film = new Film(55, "Updated Film", "Updated Description", LocalDate.of(2000, 1,1),
                 130, new Mpa(2, "PG-13", "Детям до 13 лет просмотр не желателен"),
                 new HashSet<>(), new LinkedHashSet<>());
         filmStorage.createFilm(film);
