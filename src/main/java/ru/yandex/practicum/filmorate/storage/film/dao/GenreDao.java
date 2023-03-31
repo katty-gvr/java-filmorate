@@ -13,11 +13,4 @@ public interface GenreDao {
 
     Genre getGenreById(Integer genreId);
 
-    void addGenresToFilm(Film film);
-
-    void deleteGenresFromFilm(Film film);
-
-    void updateGenresOfFilm(Film film);
-
-    LinkedHashSet<Genre> getGenresOfFilm(int filmId);
 }

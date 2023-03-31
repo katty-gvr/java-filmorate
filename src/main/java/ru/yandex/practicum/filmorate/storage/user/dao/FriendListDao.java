@@ -12,6 +12,6 @@ public interface FriendListDao {
 
     Collection<User> getAll(Integer id);
 
-    public Collection<User> getCommonFriends(Integer id, Integer otherId);
+    Collection<User> getCommonFriends(Integer id, Integer otherId);
 
 }

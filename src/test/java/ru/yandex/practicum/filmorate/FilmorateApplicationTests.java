@@ -260,7 +260,7 @@ class FilmorateApplicationTests {
         genres.add(genreDbStorage.getGenreById(1));
         genres.add(genreDbStorage.getGenreById(2));
         film.setGenres(genres);
-        genreDbStorage.addGenresToFilm(film);
+        filmStorage.addGenresToFilm(film);
 
         assertThat(film.getGenres()).isNotEmpty();
     }

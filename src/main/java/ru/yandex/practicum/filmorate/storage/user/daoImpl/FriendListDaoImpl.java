@@ -25,7 +25,7 @@ public class FriendListDaoImpl implements FriendListDao {
     public void addFriend(Integer userId, Integer friendId) {
         if (Objects.equals(userId, friendId)) {
             throw new ValidationException("Id пользователей не должны совпадать!");
-        } else if (checkUserId(userId) == 0 || checkUserId(friendId) == 0) {
+        } else if (!checkUserId(userId) || !checkUserId(friendId)) {
             throw new UserNotFoundException("Пользователь не найден");
         }
         String sqlQuery = "INSERT INTO friend_list(user_id, friend_id, confirmed)" +
@@ -35,7 +35,7 @@ public class FriendListDaoImpl implements FriendListDao {
 
     @Override
     public void deleteFriend(Integer userId, Integer friendId) {
-        if (checkUserId(userId) == 0 || checkUserId(friendId) == 0) {
+        if (!checkUserId(userId) || !checkUserId(friendId)) {
             throw new ValidationException("Введен некорректный id");
         }
         String sqlQuery = "DELETE FROM friend_list WHERE user_id = ? AND friend_id = ?";
@@ -72,8 +72,8 @@ public class FriendListDaoImpl implements FriendListDao {
         );
     }
 
-    private int checkUserId(int id) {
-        String sql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, id);
+    private boolean checkUserId(int id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM users WHERE user_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }

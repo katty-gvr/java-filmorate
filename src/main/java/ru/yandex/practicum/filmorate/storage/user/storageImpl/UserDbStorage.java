@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user.storageImpl;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,7 +16,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
-@Component("UserDbStorage")
+@Component
+@Primary
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -30,6 +33,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
+        checkUserName(user);
         String sqlQuery = "INSERT INTO users (user_name, user_email, user_login, user_birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -41,35 +45,30 @@ public class UserDbStorage implements UserStorage {
             return stmt;
         }, keyHolder);
         user.setId(keyHolder.getKey().intValue());
-        checkUserName(user);
-        if (user.getLogin().equals(user.getName())) {
-            String sqlQuery1 = "UPDATE users SET user_name = ?" +
-                    "WHERE user_id = ?";;
-            jdbcTemplate.update(sqlQuery1, user.getName(), user.getId());
-
-        }
         return user;
     }
 
     @Override
     public User updateUser(User user) {
-        if (checkUserId(user.getId()) == 0) {
-            throw new UserNotFoundException("Пользователь с идентификатором " + user.getId() + " не найден");
-        }
         String sqlQuery = "UPDATE users SET user_name = ?, user_email = ?, user_login = ?, user_birthday = ?" +
                 "WHERE user_id = ?";
         checkUserName(user);
-        jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
+        int updatedUsers = jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(),
+                user.getBirthday(), user.getId());
+        if(updatedUsers == 0) {
+            throw new UserNotFoundException("Пользователь с идентификатором " + user.getId() + " не найден");
+        }
         return user;
     }
 
     @Override
     public User findUserById(Integer userId) {
-        if (checkUserId(userId) == 0) {
+        String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, this::rowMapper, userId);
+        } catch (EmptyResultDataAccessException e) {
             throw new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден");
         }
-        String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::rowMapper, userId);
     }
 
     private User rowMapper(ResultSet resultSet, int i) throws SQLException {
@@ -79,11 +78,6 @@ public class UserDbStorage implements UserStorage {
                 resultSet.getString("user_name"),
                 resultSet.getDate("user_birthday").toLocalDate()
         );
-    }
-
-    private int checkUserId(int id) {
-        String sqlQuery = "SELECT COUNT(*) FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, Integer.class, id);
     }
 
     private void checkUserName(User user) {

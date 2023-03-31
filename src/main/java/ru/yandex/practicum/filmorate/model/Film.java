@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
+import java.util.Collection;
 import java.util.Set;
 
 
@@ -30,7 +30,7 @@ public class Film {
 
     private Set<Integer> likes;
 
-    private LinkedHashSet<Genre> genres;
+    private Collection<Genre> genres;
 
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {

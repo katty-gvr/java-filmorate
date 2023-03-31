@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 
@@ -13,14 +12,12 @@ import java.util.Collection;
 public class FilmService {
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
 
     private final LikesDao likesDao;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, LikesDao likesDao) {
+    public FilmService(FilmStorage filmStorage, LikesDao likesDao) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
         this.likesDao = likesDao;
     }
 
