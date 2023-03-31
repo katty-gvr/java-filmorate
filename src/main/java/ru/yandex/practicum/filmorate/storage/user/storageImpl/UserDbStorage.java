@@ -56,7 +56,7 @@ public class UserDbStorage implements UserStorage {
         int updatedUsers = jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(),
                 user.getBirthday(), user.getId());
         if (updatedUsers == 0) {
-            throw new UserNotFoundException("Пользователь с идентификатором {} не найден" + user.getId());
+            throw new UserNotFoundException("Пользователь с идентификатором " + user.getId() + " не найден");
         }
         return user;
     }
@@ -67,7 +67,7 @@ public class UserDbStorage implements UserStorage {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::rowMapper, userId);
         } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException("Пользователь с идентификатором {} не найден" + userId);
+            throw new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден");
         }
     }
 
