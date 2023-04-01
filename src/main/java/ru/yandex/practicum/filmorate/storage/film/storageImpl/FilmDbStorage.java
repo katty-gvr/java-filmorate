@@ -15,23 +15,24 @@ import ru.yandex.practicum.filmorate.storage.film.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.function.UnaryOperator.identity;
 
 @Component
 @Primary
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final GenreDao genreDao;
     private final LikesDao likesDao;
 
     final LocalDate latestReleaseDate = LocalDate.of(1895, 12,28);
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDao genreDao, LikesDao likesDao) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, LikesDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
-        this.genreDao = genreDao;
         this.likesDao = likesDao;
     }
 
@@ -43,7 +44,39 @@ public class FilmDbStorage implements FilmStorage {
                 "m.rating_id as mpa_id " +
                 "FROM films as f " +
                 "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id ";
-        return jdbcTemplate.query(sqlQuery, this::makeFilm);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
+        getFilmGenres(films);
+        getFilmLikes(films);
+        return films;
+    }
+
+    private void getFilmGenres(List<Film> films) {
+        String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
+
+        final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, identity()));
+
+        final String sqlQuery = "SELECT * " +
+                "FROM genres AS g " +
+                "INNER JOIN films_genres AS fg ON g.genre_id = fg.genre_id " +
+                "WHERE fg.film_id IN(" + inSql + ")";
+
+        jdbcTemplate.query(sqlQuery, (rs) -> {
+            final Film film = filmById.get(rs.getInt("film_id"));
+            film.getGenres().add(makeGenre(rs, films.size()));
+        }, films.stream().map(Film::getId).toArray());
+    }
+
+    private void getFilmLikes(List<Film> films) {
+        String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
+
+        final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, identity()));
+
+        final String sqlQuery = "SELECT user_id FROM films_likes WHERE user_id IN(" + inSql + ")";
+
+        jdbcTemplate.query(sqlQuery, (rs) -> {
+            final Film film = filmById.get(rs.getInt("film_id"));
+            film.getGenres().add(makeGenre(rs, films.size()));
+        }, films.stream().map(Film::getId).toArray());
     }
 
     @Override
@@ -101,8 +134,10 @@ public class FilmDbStorage implements FilmStorage {
                "FROM films as f " +
                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
                "WHERE film_id = ?";
+
        Film film = jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
-       updateGenresOfFilm(film);
+       film.setGenres(getGenresOfFilm(id));
+       film.setLikes(likesDao.getFilmLikes(id));
        return film;
     }
 
@@ -118,7 +153,11 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(l.user_id) DESC " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::makeFilm, count);
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, count);
+        getFilmGenres(films);
+        getFilmLikes(films);
+        return films;
     }
 
     public void deleteGenresFromFilm(Film film) {
@@ -156,8 +195,8 @@ public class FilmDbStorage implements FilmStorage {
                 new Mpa(resultSet.getInt("mpa_id"),
                         resultSet.getString("mpa_name"),
                         resultSet.getString("mpa_description")),
-                likesDao.getFilmLikes(resultSet.getInt("film_id")),
-                getGenresOfFilm(resultSet.getInt("film_id"))
+                new HashSet<Integer>(), // для лайков
+                new ArrayList<Genre>()  // для жанров
         );
    }
 
