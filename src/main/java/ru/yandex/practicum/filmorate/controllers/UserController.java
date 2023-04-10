@@ -35,32 +35,37 @@ public class UserController {
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         userService.updateUser(user);
-        log.debug("Обнлвен пользователь: {}", user);
+        log.debug("Обновлен пользователь: {}", user);
         return user;
     }
 
     @GetMapping("/{id}") // получение пользователя по айди
     public User findUser(@PathVariable("id") Integer id) {
+        log.debug("Получен GET-запрос к эндпоинту: /users/{}", id);
         return userService.findUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}") // добавление в друзья
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addFriend(id, friendId);
+        log.debug("Пользователь c id {} добавил в друзья пользователя с id {}", id, friendId);
     }
 
     @GetMapping("/{id}/friends") // получение списка друзей пользователя
     public Collection<User> getFriendList(@PathVariable("id") Integer id) {
+        log.debug("Получен GET-запрос на вывод друзей пользователя с id {}", id);
         return userService.getFriendList(id);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}") //удаление из друзей
     public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.deleteFriend(id, friendId);
+        log.debug("Пользователь c id {} удалили из друзей пользователя с id {}", id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}") // получение списка общих друзей с другим пользователем
     public Collection<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        log.debug("Получен GET-запрос на вывод общих друзей пользователей id {} и id {}", id, otherId);
         return userService.getCommonFriends(id, otherId);
     }
 }

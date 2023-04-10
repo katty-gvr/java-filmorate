@@ -3,23 +3,22 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+
+    private final LikesDao likesDao;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage, LikesDao likesDao) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+        this.likesDao = likesDao;
     }
 
     public Collection<Film> getAllFilms() {
@@ -39,23 +38,16 @@ public class FilmService {
     }
 
     public void addLike(Integer filmId, Integer userId) {
-        Film film = findFilmById(filmId);
-        film.getLikes().add(userId);
+        likesDao.addLikeToFilm(filmId, userId);
+
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
-        Film film = findFilmById(filmId);
-        User user = userStorage.findUserById(userId);
-        film.getLikes().remove(user.getId());
+        likesDao.deleteLikeFromFilm(filmId, userId);
     }
 
     public Collection<Film> getPopularFilms(Integer count) {
-        Collection<Film> films = filmStorage.findAll();
-        return films.stream()
-                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.findPopularFilms(count);
     }
-
 }
 
